@@ -137,17 +137,6 @@ export default class TrainPage extends React.Component<ITrainPageProps, ITrainPa
                             <span> Model ID: {currTrainRecord.modelInfo.modelId} </span>
                         </div>
                     }
-                    {this.state.viewType === "tableView" &&
-                        <TrainTable
-                            trainMessage={this.state.trainMessage}
-                            accuracies={currTrainRecord && currTrainRecord.accuracies} />}
-
-                    {this.state.viewType === "chartView" && currTrainRecord &&
-                        <TrainChart
-                            accuracies={currTrainRecord.accuracies}
-                            modelId={currTrainRecord.modelInfo.modelId}
-                            projectTags={this.props.project.tags} />
-                    }
                 </main>
                 <div className="train-page-menu bg-lighter-1">
                     <div className="condensed-list">
@@ -361,7 +350,7 @@ export default class TrainPage extends React.Component<ITrainPageProps, ITrainPa
         try {
             const trainRes = await this.train();
             const trainStatusRes =
-                await this.getTrainStatus(trainRes.headers["location"]);
+                await this.getTrainStatus(trainRes.headers["operation-location"]);
             const updatedProject = this.buildUpdatedProject(
                 this.parseTrainResult(trainStatusRes),
             );
@@ -464,15 +453,13 @@ export default class TrainPage extends React.Component<ITrainPageProps, ITrainPa
     }
 
     private async getTrainStatus(operationLocation: string): Promise<any> {
-        const timeoutPerFileInMs = 10000;  // 10 second for each file
-        const minimumTimeoutInMs = 300000;  // 5 minutes minimum waiting time  for each training process
-        const extendedTimeoutInMs = timeoutPerFileInMs * Object.keys(this.props.project.assets || []).length;
+        const timeoutInMs = 5400000;  // 90 minutes minimum waiting time  for each training process
         const res = this.poll(() => {
             return ServiceHelper.getWithAutoRetry(
                 operationLocation,
                 { headers: { "cache-control": "no-cache" } },
                 this.props.project.apiKey as string);
-        }, Math.max(extendedTimeoutInMs, minimumTimeoutInMs), 1000);
+        }, timeoutInMs, 15000);
         return res;
     }
 
@@ -516,17 +503,7 @@ export default class TrainPage extends React.Component<ITrainPageProps, ITrainPa
                 modelName: response["modelInfo"]["modelName"],
                 isComposed: false,
             },
-            averageAccuracy: response["trainResult"]["averageModelAccuracy"],
-            accuracies: this.buildAccuracies(response["trainResult"]["fields"]),
         };
-    }
-
-    private buildAccuracies = (fields: object[]): object => {
-        const accuracies = {};
-        for (const field of fields) {
-            accuracies[field["fieldName"]] = field["accuracy"];
-        }
-        return accuracies;
     }
 
     /**

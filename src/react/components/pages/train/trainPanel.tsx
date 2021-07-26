@@ -31,7 +31,6 @@ export default class TrainPanel
             </PrimaryButton>
             {currTrainRecord &&
                 <TrainRecord
-                    averageAccuracy={currTrainRecord.averageAccuracy}
                     modelInfo={currTrainRecord.modelInfo} />
             }
         </div>

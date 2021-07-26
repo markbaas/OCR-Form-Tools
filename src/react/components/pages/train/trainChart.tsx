@@ -6,7 +6,6 @@ import Chart from "chart.js";
 import { ITag } from "../../../../models/applicationState";
 
 export interface ITrainChartProps {
-    accuracies: object;
     modelId: string;
     projectTags: ITag[];
 }
@@ -39,40 +38,8 @@ export default class TrainChart
     private newChart = (): Chart => {
         return new Chart(this.chartRef.current, {
             type: "horizontalBar",
-            data: this.chartData(),
             options: this.chartOptions(),
         });
-    }
-
-    private chartData = (): object => {
-        return {
-            labels: this.getLabels(),
-            datasets: [{
-                data: this.getData(),
-                backgroundColor: this.getColor(),
-            }],
-        };
-    }
-
-    private getLabels = (): string[] => {
-        return Object
-            .entries(this.props.accuracies)
-            .map((entry) =>
-                entry[0] + " (" + entry[1] + ")");
-    }
-
-    private getData = (): string[] => {
-        return Object
-            .values(this.props.accuracies)
-    }
-
-    private getColor = (): string[] => {
-        return Object.keys(this.props.accuracies)
-            .map((label) => {
-                const tag = this.props.projectTags
-                    .find((tag) => label === tag.name);
-                return tag ? tag.color : "#eeeeee";
-            });
     }
 
     private chartOptions = (): object => {

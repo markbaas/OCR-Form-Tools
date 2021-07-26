@@ -98,7 +98,7 @@ export default class ServiceHelper {
                     throw err;
                 }
 
-                await delay(constants.initialRetryInterval * Math.pow(2, currentRetry - 1));
+                await delay(constants.initialRetryInterval);
             }
         }
     }
