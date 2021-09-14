@@ -108,7 +108,7 @@ export class OCRService {
             }
             const apiVersion = getAPIVersion(this.project?.apiVersion);
             const response = await ServiceHelper.postWithAutoRetry(
-                this.project.apiUriBase + `/formrecognizer/${apiVersion}/layout/analyze`,
+                this.project.apiUriBase + `/formrecognizer/v2.0-preview/layout/analyze`,
                 body,
                 { headers },
                 this.project.apiKey as string,
