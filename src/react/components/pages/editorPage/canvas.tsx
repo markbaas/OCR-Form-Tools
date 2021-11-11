@@ -406,7 +406,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         try {
             this.setAutoLabelingStatus(AutoLabelingStatus.running);
             const asset = this.state.currentAsset.asset;
-            const assetPath = asset.path;
+            const assetPath = asset.path.split("?")[0];
             const predictService = new PredictService(this.props.project);
             const result = await predictService.getPrediction(assetPath);
             const assetService = new AssetService(this.props.project);
